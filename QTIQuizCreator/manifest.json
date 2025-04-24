@@ -2,11 +2,15 @@
   "manifest_version": 3,
   "name": "QTIQuiz Creator",
   "version": "0.2",
-  "description": "Create Canvas-compatible quiz files from JSON content",
+  "description": "This Chrome extension streamlines quiz creation for Canvas. It helps you generate multiple choice questions in JSON format using AI tools like ChatGPT, convert them to QTI-compatible zip files, and easily import them into Canvas. Ideal for educators looking to save time and automate quiz setup. (Note: Currently does not support images, code snippets, or math expressions.)",
   "author": "Keshav Bhandari",
-  "homepage_url": "https://github.com/keshavsbhandari/QTIQuizCreator",
+  "homepage_url": "https://github.com/keshavbhandari/QTIQuiz-Creator",
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "icons": {
+    "128": "icon.png"
   },
   "permissions": [
     "storage",

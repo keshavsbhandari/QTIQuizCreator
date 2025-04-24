@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "QTIQuiz Creator",
+  "version": "0.2",
+  "description": "Create Canvas-compatible quiz files from JSON content",
+  "author": "Keshav Bhandari",
+  "homepage_url": "https://github.com/keshavbhandari/QTIQuizCreator",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "storage",
+    "downloads"
+  ],
+  "web_accessible_resources": [{
+    "resources": ["prompt.txt"],
+    "matches": ["<all_urls>"]
+  }]
+}

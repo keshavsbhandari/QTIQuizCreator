@@ -1,0 +1,60 @@
+Objective:
+Generate the MCQs in JSON format as mentioned below.
+
+Generate a multiple-choice quiz based on
+- The uploaded files.
+- The quiz should assess foundational understanding of data structures as introduced in this document.
+
+Inputs:
+- Quiz Title: Unit-01: Data Structure Basics Quiz
+- Quiz Description: This quiz assesses students' understanding of fundamental data structures such as arrays, stacks, queues, and linked lists.
+- Number of Questions: 8
+
+Scope:
+- Limit all questions strictly to the content covered in the uploaded document.
+- Focus on the following topics (if present):
+  - Types and classifications of data structures
+  - Linear vs. non-linear structures
+  - Static vs. dynamic structures
+  - Operations on structures (insert, delete, search, traverse)
+  - Common use cases and real-world examples
+
+Question Guidelines:
+- Each question must have 4 options
+- Exactly 1 correct answer per question (mark with "*" in output)
+- Include brief explanation for all options (correct and incorrect)
+- Distribute complexity as follows:
+  - 3 Easy (recall-based)
+  - 3 Moderate (conceptual understanding)
+  - 2 Difficult (critical thinking or edge cases)
+
+Output Format (JSON):
+{
+    "title": "Unit-01 Basics Quiz",
+    "description": "A quiz to assess understanding of functions, organization, arrays, vectors, and comparisons in C++.",
+    "questions": [
+        {
+            "question": "Which of the following is true about a function with arguments and no return type?",
+            "options": [
+                ["It does not accept input values.", "", "This is incorrect as it does accept input values."],
+                ["It accepts input values but does not return any output.", "*", "Correct! This describes the function type."],
+                ["It neither accepts input nor returns output.", "", "This describes a different type of function."],
+                ["It accepts input and always returns a value.", "", "This is a different function type."]
+            ]
+        },
+        {
+            "question": "What is the primary benefit of inline functions?",
+            "options": [
+                ["They reduce function call overhead.", "*", "Correct! Inline functions avoid function call overhead."],
+                ["They allow variable-length arguments.", "", "This is not related to inline functions."],
+                ["They provide runtime polymorphism.", "", "This is achieved by virtual functions, not inline functions."],
+                ["They execute slower than normal functions.", "", "Inline functions are generally faster."]
+            ]
+        }
+    ]
+}
+
+Notes:
+- Avoid repeating questions or options.
+- Ensure a mix of fact-based and conceptual questions.
+- Focus on clarity, accuracy, and alignment with the document.

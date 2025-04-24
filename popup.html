@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>QTIQuiz Creator</title>
+  <script src="lib/jszip.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/json.min.js"></script>
+  <style>
+    body {
+      width: 600px;
+      min-height: 400px;
+      max-height: 800px;
+      padding: 0;
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f5f5;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body.expanded {
+      width: 800px;
+      min-height: 600px;
+    }
+
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 25px;
+    }
+
+    .header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 15px 20px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 500;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .expand-button {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 5px;
+      transition: color 0.3s;
+    }
+
+    .expand-button:hover {
+      color: #3498db;
+    }
+
+    .reset-button {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 5px;
+      transition: color 0.3s;
+    }
+
+    .reset-button:hover {
+      color: #3498db;
+    }
+
+    .tabs {
+      display: flex;
+      background-color: #34495e;
+      padding: 0;
+      margin: 0;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 15px;
+      text-align: center;
+      color: #ecf0f1;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      font-weight: 500;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tab.active {
+      background-color: #2c3e50;
+      border-bottom: 3px solid #3498db;
+    }
+
+    .tab:hover {
+      background-color: #2c3e50;
+    }
+
+    .tab-info {
+      font-size: 11px;
+      font-weight: normal;
+      opacity: 0.8;
+      line-height: 1.2;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 20px;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      background-color: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .number-inputs {
+      display: flex;
+      gap: 15px;
+    }
+
+    .number-inputs .form-group {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #2c3e50;
+    }
+
+    label::after {
+      content: " *";
+      color: #e74c3c;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+      box-sizing: border-box;
+    }
+
+    input[type="text"]:focus, input[type="number"]:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      resize: vertical;
+      font-size: 14px;
+      transition: border-color 0.3s;
+      box-sizing: border-box;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+
+    textarea:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .error {
+      color: #e74c3c;
+      margin-top: 10px;
+      display: none;
+      padding: 10px;
+      background-color: #fde8e8;
+      border-radius: 4px;
+    }
+
+    .prompt-container {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .copy-button {
+      display: none;
+    }
+
+    .collapsible {
+      background-color: #34495e;
+      color: white;
+      cursor: pointer;
+      padding: 15px;
+      width: 100%;
+      border: none;
+      text-align: left;
+      outline: none;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 4px;
+      margin-top: 20px;
+      transition: background-color 0.3s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .copy-icon {
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .copy-icon:hover {
+      color: #3498db;
+    }
+
+    .content {
+      padding: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+      background-color: white;
+      border-radius: 0 0 4px 4px;
+      margin-bottom: 5px;
+    }
+
+    .content.active {
+      max-height: 1000px;
+    }
+
+    .prompt-content {
+      background-color: #282c34;
+      padding: 20px;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #abb2bf;
+      border: 1px solid #3e4451;
+      overflow-x: auto;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .prompt-content .hljs {
+      background: transparent;
+      padding: 0;
+    }
+
+    .prompt-content .hljs-string {
+      color: #98c379;
+    }
+
+    .prompt-content .hljs-number {
+      color: #d19a66;
+    }
+
+    .prompt-content .hljs-keyword {
+      color: #c678dd;
+    }
+
+    .prompt-content .hljs-property {
+      color: #e06c75;
+    }
+
+    .section-input {
+      height: 100px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .footer {
+      background-color: #f5f5f5;
+      color: #7f8c8d;
+      text-align: center;
+      padding: 5px;
+      font-size: 10px;
+      border-top: 1px solid #e0e0e0;
+      z-index: 1;
+      margin-top: auto;
+    }
+
+    .howto-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .howto-content h3 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      font-size: 18px;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+    }
+
+    .instruction-step {
+      margin-bottom: 20px;
+    }
+
+    .instruction-step h4 {
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .instruction-step p {
+      color: #34495e;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .instruction-step ul {
+      list-style-type: none;
+      padding-left: 20px;
+      margin-bottom: 10px;
+    }
+
+    .instruction-step li {
+      color: #34495e;
+      line-height: 1.6;
+      margin-bottom: 8px;
+      position: relative;
+      padding-left: 15px;
+    }
+
+    .instruction-step li:before {
+      content: "-";
+      color: #3498db;
+      position: absolute;
+      left: 0;
+      font-size: 16px;
+    }
+
+    .instruction-step code {
+      background-color: #f8f9fa;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 12px;
+      color: #e74c3c;
+    }
+
+    .instruction-step.note {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 4px;
+      border-left: 4px solid #e74c3c;
+    }
+
+    .instruction-step.note h4 {
+      color: #e74c3c;
+    }
+
+    .arrow {
+      color: #3498db;
+      margin: 0 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="main-content">
+    <div class="header">
+      QTIQuiz Creator
+      <div>
+        <button class="expand-button" id="expandButton" title="Maximize/Minimize">
+          <i class="fas fa-window-maximize"></i>
+        </button>
+        <button class="reset-button" id="resetButton" title="Reset all fields">
+          <i class="fas fa-sync-alt"></i>
+        </button>
+      </div>
+    </div>
+    
+    <div class="tabs">
+      <div class="tab active" data-tab="prompt">
+        <i class="fas fa-file-alt"></i>
+        Prompt Generation
+        <span class="tab-info">Generate a prompt for ChatGPT to create quiz questions</span>
+      </div>
+      <div class="tab" data-tab="convert">
+        <i class="fas fa-exchange-alt"></i>
+        Convert to QTIQuiz
+        <span class="tab-info">Convert JSON quiz data into Canvas-compatible format</span>
+      </div>
+      <div class="tab" data-tab="howto">
+        <i class="fas fa-question-circle"></i>
+        How To
+        <span class="tab-info">Step-by-step guide to create Canvas quizzes</span>
+      </div>
+    </div>
+
+    <div id="prompt-tab" class="tab-content active">
+      <div class="form-group">
+        <label for="quizTitle">Quiz Title:</label>
+        <input type="text" id="quizTitle" placeholder="Enter quiz title" required>
+      </div>
+      <div class="form-group">
+        <label for="quizDescription">Quiz Description:</label>
+        <textarea id="quizDescription" placeholder="Enter quiz description" required></textarea>
+      </div>
+      <div class="number-inputs">
+        <div class="form-group">
+          <label for="numQuestions">Number of Questions:</label>
+          <input type="number" id="numQuestions" value="8" min="1" max="100" required>
+        </div>
+        <div class="form-group">
+          <label for="numOptions">Number of Options:</label>
+          <input type="number" id="numOptions" value="4" min="2" max="10" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputs">Inputs:</label>
+        <textarea id="inputs" class="section-input" placeholder="Enter inputs"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="scope">Scope:</label>
+        <textarea id="scope" class="section-input" placeholder="Enter scope"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="guidelines">Questions Guidelines:</label>
+        <textarea id="guidelines" class="section-input" placeholder="Enter guidelines"></textarea>
+      </div>
+      <button class="collapsible">
+        <span>Show Prompt</span>
+        <i class="fas fa-copy copy-icon" id="copyPrompt"></i>
+      </button>
+      <div class="content">
+        <div class="form-group">
+          <label for="promptText">Generated Prompt:</label>
+          <div class="prompt-container">
+            <div class="prompt-content" id="promptText" contenteditable="true" spellcheck="false"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="convert-tab" class="tab-content">
+      <div class="form-group">
+        <label for="quizName">Quiz Name:</label>
+        <input type="text" id="quizName" placeholder="Enter quiz name (e.g., unit01QT)" required>
+      </div>
+      <div class="form-group">
+        <label for="jsonContent">JSON Content:</label>
+        <textarea id="jsonContent" class="json-input" placeholder="Paste your JSON content here" required></textarea>
+      </div>
+      <button id="convertBtn">Convert to ZIP</button>
+      <div id="error" class="error"></div>
+    </div>
+
+    <div id="howto-tab" class="tab-content">
+      <div class="howto-content">
+        <h3>Instructions for Creating Canvas Quiz from JSON:</h3>
+        
+        <div class="instruction-step">
+          <h4>1. Generate Prompt</h4>
+          <p>Create a prompt based on your quiz needs. Use this with tools like ChatGPT (optionally with files) to generate multiple choice questions in JSON format. Ensure the format and answers are correct.</p>
+        </div>
+
+        <div class="instruction-step">
+          <h4>2. Convert to QTIQuiz</h4>
+          <p>Once satisfied with the JSON, paste it into the <strong>JSON Content</strong> field in the <em>"Convert to QTIQuiz"</em> section. Enter a file name, then download the generated <code>.zip</code> file.</p>
+        </div>
+
+        <div class="instruction-step">
+          <h4>3. Import to Canvas</h4>
+          <ul>
+            <li>Go to your Canvas course site > <strong>Settings</strong> > <strong>Import Course Content</strong></li>
+            <li>Select <strong>QTI .zip file</strong> as the content type</li>
+            <li>Upload the zip file. After import, adjust quiz location under the <strong>Quizzes</strong> tab.</li>
+          </ul>
+        </div>
+
+        <div class="instruction-step">
+          <h4>4. Done</h4>
+          <p>Your Canvas quiz is now ready!</p>
+        </div>
+
+        <div class="instruction-step note">
+          <h4>5. Note</h4>
+          <p>Currently, this tool does <strong>not support</strong> images, code snippets, or math expressions.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>Copyright (c) Keshav Bhandari</p>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html> 

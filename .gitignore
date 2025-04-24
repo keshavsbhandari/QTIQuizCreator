@@ -28,6 +28,7 @@ build/
 # Chrome Extension specific
 *.zip
 *.crx
+*.pem
 
 # Ignore local storage data or session files (if used)
 local_storage/

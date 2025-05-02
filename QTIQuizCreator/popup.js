@@ -319,6 +319,34 @@ Important notes:
   }
 
   function generateAssessmentXML(quizData, identifier) {
+    // Function to detect and format code blocks
+    function formatQuestionText(text) {
+      // Check if the text contains code blocks
+      if (text.includes('```')) {
+        // Split the text by code blocks
+        const parts = text.split(/```(\w*)\n([\s\S]*?)```/);
+        let formattedText = '';
+        
+        for (let i = 0; i < parts.length; i++) {
+          if (i % 3 === 0) {
+            // Regular text
+            formattedText += parts[i];
+          } else if (i % 3 === 1) {
+            // Language identifier
+            const language = parts[i] || 'text';
+            const code = parts[i + 1];
+            formattedText += `<pre><code class="language-${language}">${code}</code></pre>`;
+            i++; // Skip the code part as we've already used it
+          }
+        }
+        
+        return `<mattext texttype="text/html"><![CDATA[${formattedText}]]></mattext>`;
+      }
+      
+      // If no code blocks, return regular text
+      return `<mattext texttype="text/html"><![CDATA[<p>${text}</p>]]></mattext>`;
+    }
+
     // Restructure questions to ensure the correct answer is always the first option
     quizData.questions = quizData.questions.map(question => {
       let correctOptionIndex = question.options.findIndex(option => option[1] === "*");
@@ -346,7 +374,7 @@ Important notes:
         return `
               <response_label ident="${questionId}_choice_${String(i + 1).padStart(2, '0')}">
                 <material>
-                  <mattext texttype="text/html">&lt;p&gt;${option[0]}&lt;/p&gt;</mattext>
+                  <mattext texttype="text/html"><![CDATA[<p>${option[0]}</p>]]></mattext>
                 </material>
               </response_label>`;
       }).join("\n");
@@ -361,7 +389,7 @@ Important notes:
         <itemfeedback ident="${questionId}_choice_${String(i + 1).padStart(2, '0')}_fb">
           <flow_mat>
             <material>
-              <mattext texttype="text/html">&lt;p&gt;${option[2]}&lt;/p&gt;</mattext>
+              <mattext texttype="text/html"><![CDATA[<p>${option[2]}</p>]]></mattext>
             </material>
           </flow_mat>
         </itemfeedback>`;
@@ -391,7 +419,7 @@ Important notes:
         </itemmetadata>
         <presentation>
           <material>
-            <mattext texttype="text/html">&lt;p&gt;${question.question}&lt;/p&gt;</mattext>
+            ${formatQuestionText(question.question)}
           </material>
           <response_lid ident="response1" rcardinality="Single">
             <render_choice>

@@ -50,6 +50,15 @@ Output Format (JSON):
                 ["They provide runtime polymorphism.", "", "This is achieved by virtual functions, not inline functions."],
                 ["They execute slower than normal functions.", "", "Inline functions are generally faster."]
             ]
+        },
+        {
+            "question": "In Python, what will be the output of the following code?\n\n```python\nx = 0\nfor i in range(5):\n    if i % 2 == 0:\n        x += i\nprint(x)\n```",
+            "options": [
+                ["4", "", "Incorrect. The loop adds 0, 2, and 4, which sums to 6."],
+                ["5", "", "Incorrect. This would be the result if odd numbers were added."],
+                ["6", "*", "Correct. The loop adds even numbers 0 + 2 + 4 = 6."],
+                ["10", "", "Incorrect. This would result from adding all numbers from 0 to 4."]
+            ]
         }
     ]
 }

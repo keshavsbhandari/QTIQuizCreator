@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "QTIQuiz Creator",
-  "version": "0.1",
+  "version": "0.3",
   "description": "Create quizzes for Canvas using AI tools like ChatGPT. Generate JSON, convert to QTI, and import. No images/code/math support.",
   "author": "Keshav Bhandari",
   "homepage_url": "https://github.com/keshavbhandari/QTIQuiz-Creator",
@@ -13,7 +13,6 @@
     "128": "icon.png"
   },
   "permissions": [
-    "storage",
     "downloads"
   ],
   "web_accessible_resources": [{
